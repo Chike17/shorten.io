@@ -33,9 +33,7 @@ app.use(session ({
 app.use(express.static(__dirname + '/public'));
 
 var checkUser = function (req, res, next) {
-  console.log(req.session.user, 'REQ.USER*****************');
   if (req.session && req.session.username) {
-    // console.log('i was here');
     next();
   } else {
     res.redirect('/login');
@@ -51,17 +49,42 @@ function(req, res) {
   res.render('index');
 });
 
+app.post('/login', function (req, res) {
+
+  var username = req.body.username;
+  var password = req.body.password;
+  db.knex.select('*').from('users')
+  .where({username: username}).then(function(found) {
+    res.redirect('/');
+    
+  })
+  .catch(function () {
+  });
+  req.session.username = username;
+  res.render('login'); 
+
+});
+
 
 app.get('/create', checkUser, 
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', checkUser, 
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
+});
+
+app.post('/signup', function(req, res) {
+  console.log('&&&&&&&&&&&&: ', req.body);
+  db.knex.insert({username: req.body.username, password: req.body.password})
+  .into('users').then(function () {
+    res.redirect('/');
+  });
+  
 });
 
 app.post('/links',  
