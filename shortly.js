@@ -53,16 +53,19 @@ app.post('/login', function (req, res) {
 
   var username = req.body.username;
   var password = req.body.password;
+
   db.knex.select('*').from('users')
   .where({username: username}).then(function(found) {
-    res.redirect('/');
-    
+    if (found.length < 1) {
+      res.redirect('/login');
+    } else {
+      req.session.username = username;
+      res.redirect('/');
+    }
   })
-  .catch(function () {
+  .catch(function (error) {
+    res.redirect('/login');
   });
-  req.session.username = username;
-  res.render('login'); 
-
 });
 
 
