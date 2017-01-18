@@ -33,6 +33,7 @@ h1 {
 
 .navigation .logout {
   float: right;
+  background-color: grey;
 }
 
 .navigation li a , .logout {

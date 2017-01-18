@@ -68,6 +68,10 @@ app.post('/login', function (req, res) {
   });
 });
 
+app.get('/logout', function (req, res) {
+  req.session.destroy();
+  res.redirect('/');
+});
 
 app.get('/create', checkUser, 
 function(req, res) {
@@ -81,13 +85,17 @@ function(req, res) {
   });
 });
 
+app.get('/signup', 
+function(req, res) {
+  res.render('signup');
+});
+
 app.post('/signup', function(req, res) {
   console.log('&&&&&&&&&&&&: ', req.body);
   db.knex.insert({username: req.body.username, password: req.body.password})
   .into('users').then(function () {
     res.redirect('/');
   });
-  
 });
 
 app.post('/links',  
@@ -100,6 +108,7 @@ function(req, res) {
   }
 
   new Link({ url: uri }).fetch().then(function(found) {
+    console.log(found, '***************************');
     if (found) {
       res.status(200).send(found.attributes);
     } else {
@@ -108,7 +117,6 @@ function(req, res) {
           console.log('Error reading URL heading: ', err);
           return res.sendStatus(404);
         }
-
         Links.create({
           url: uri,
           title: title,
@@ -136,6 +144,7 @@ function(req, res) {
 
 app.get('/*', function(req, res) {
   new Link({ code: req.params[0] }).fetch().then(function(link) {
+    console.log(req.params, 'params?????????????????????????');
     if (!link) {
       res.redirect('/');
     } else {
