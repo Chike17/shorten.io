@@ -10,6 +10,7 @@ var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
+var bcrypt = require('bcrypt-nodejs');
 
 var app = express();
 
@@ -59,12 +60,22 @@ app.post('/login', function (req, res) {
     if (found.length < 1) {
       res.redirect('/login');
     } else {
-      req.session.username = username;
-      res.redirect('/');
+      console.log(found);
+      bcrypt.compare(req.body.password, found[0].password, function (err, bool) {
+        if (!bool) {
+          res.redirect('/create');
+          return;
+        } else {
+          req.session.username = username;
+          res.redirect('/');
+          return;
+        }
+      });
+
     }
   })
   .catch(function (error) {
-    res.redirect('/login');
+    // res.redirect('/login');
   });
 });
 
@@ -91,10 +102,13 @@ function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-  console.log('&&&&&&&&&&&&: ', req.body);
-  db.knex.insert({username: req.body.username, password: req.body.password})
-  .into('users').then(function () {
-    res.redirect('/');
+
+  var salt = bcrypt.genSaltSync(10);
+  bcrypt.hash(req.body.password, salt, null, function (err, hashedPassword) {
+    db.knex.insert({username: req.body.username, password: hashedPassword})
+      .into('users').then(function () {
+        res.redirect('/');
+      });
   });
 });
 
