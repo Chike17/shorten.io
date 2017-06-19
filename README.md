@@ -1,2 +1,3 @@
-#shortly-express
-This is a project I completed as a student at [hackreactor](http://hackreactor.com). This project was worked on with a pair.
+#shortly.io
+This is a project I worked on to showcase my skills with authentication
+and developing a full-stack application.

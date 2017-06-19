@@ -6,9 +6,6 @@ var log = function (thing) {
   console.log(thing);
 };
 
-
-
-
 app.listen(4568, function() {
   console.log('Shortly is listening on 4568');
 });
